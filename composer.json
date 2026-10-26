@@ -19,7 +19,7 @@
       "name": "integrations"
     }
   },
-  "version": "1.4.4",
+  "version": "1.4.5",
   "autoload-dev": {
     "psr-4": {
       "Liberu\\Foundation\\Integrations\\Tests\\": "tests/"
