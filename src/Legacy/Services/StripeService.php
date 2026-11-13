@@ -16,7 +16,10 @@ class StripeService
 
     public function __construct()
     {
-        $this->stripeClient = new StripeClient(config('services.stripe.secret'));
+        $this->stripeClient = new StripeClient([
+            'api_key' => config('services.stripe.secret'),
+            'stripe_version' => config('services.stripe.api_version'),
+        ]);
     }
 
     public function createSubscription(Team $team, string $paymentMethodId, string $plan = 'monthly'): TeamSubscription

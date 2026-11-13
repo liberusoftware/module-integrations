@@ -52,7 +52,7 @@ class SamlAcsTest extends TestCase
         $requestId = '_req'.bin2hex(random_bytes(8));
         $response = $this->buildSignedResponse($team, 'alice@corp.example', $requestId);
 
-        $result = $this->withSession(['saml_request_id' => $requestId])
+        $result = $this->withSession(['saml_request_id' => $requestId, 'saml_team' => $team->id])
             ->post('/saml/'.$team->id.'/acs', ['SAMLResponse' => $response]);
 
         $result->assertRedirect('/app');
@@ -71,7 +71,7 @@ class SamlAcsTest extends TestCase
         // Corrupt the signed document after signing.
         $tampered = base64_encode(str_replace('alice@corp.example', 'attacker@evil.example', base64_decode($response)));
 
-        $this->withSession(['saml_request_id' => $requestId])
+        $this->withSession(['saml_request_id' => $requestId, 'saml_team' => $team->id])
             ->post('/saml/'.$team->id.'/acs', ['SAMLResponse' => $tampered])
             ->assertForbidden();
 
@@ -87,7 +87,7 @@ class SamlAcsTest extends TestCase
         $requestId = '_req'.bin2hex(random_bytes(8));
         $response = $this->buildSignedResponse($team, 'stranger@corp.example', $requestId);
 
-        $this->withSession(['saml_request_id' => $requestId])
+        $this->withSession(['saml_request_id' => $requestId, 'saml_team' => $team->id])
             ->post('/saml/'.$team->id.'/acs', ['SAMLResponse' => $response])
             ->assertForbidden();
 
@@ -103,7 +103,7 @@ class SamlAcsTest extends TestCase
         $response = $this->buildSignedResponse($team, 'alice@corp.example', '_reqEXPECTED');
 
         // Session expects a different request id than the response was bound to.
-        $this->withSession(['saml_request_id' => '_reqDIFFERENT'])
+        $this->withSession(['saml_request_id' => '_reqDIFFERENT', 'saml_team' => $team->id])
             ->post('/saml/'.$team->id.'/acs', ['SAMLResponse' => $response])
             ->assertForbidden();
 

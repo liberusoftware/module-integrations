@@ -9,6 +9,7 @@ use Filament\Resources\Resource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,14 +27,35 @@ class WebhookDeliveryResource extends Resource
         return false;
     }
 
+    public static function getCreateAuthorizationResponse(): Response
+    {
+        return static::canCreate()
+            ? parent::getCreateAuthorizationResponse()
+            : Response::deny();
+    }
+
     public static function canEdit(Model $record): bool
     {
         return false;
     }
 
+    public static function getEditAuthorizationResponse(Model $record): Response
+    {
+        return static::canEdit($record)
+            ? parent::getEditAuthorizationResponse($record)
+            : Response::deny();
+    }
+
     public static function canDelete(Model $record): bool
     {
         return false;
+    }
+
+    public static function getDeleteAuthorizationResponse(Model $record): Response
+    {
+        return static::canDelete($record)
+            ? parent::getDeleteAuthorizationResponse($record)
+            : Response::deny();
     }
 
     public static function getEloquentQuery(): Builder

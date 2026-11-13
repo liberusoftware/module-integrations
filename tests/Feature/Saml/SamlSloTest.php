@@ -103,7 +103,7 @@ class SamlSloTest extends TestCase
         $rid = '_req'.bin2hex(random_bytes(8));
         $response = $this->buildSignedResponse($team, 'alice@corp.example', $rid);
 
-        $this->withSession(['saml_request_id' => $rid])
+        $this->withSession(['saml_request_id' => $rid, 'saml_team' => $team->id])
             ->call('POST', '/saml/'.$team->id.'/acs', ['SAMLResponse' => $response])
             ->assertRedirect('/app');
 

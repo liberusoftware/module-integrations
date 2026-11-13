@@ -8,6 +8,7 @@ use App\Actions\Sso\ProvisionSsoUser;
 use App\Models\SamlConnection;
 use App\Models\Team;
 use App\Models\User;
+use App\Services\Sso\SamlPayloadGuard;
 use App\Services\Sso\SamlSettings;
 use App\Services\TeamManagementService;
 use Illuminate\Http\RedirectResponse;
@@ -46,17 +47,26 @@ class SamlLoginController extends Controller
     {
         $connection = $this->enabledConnection($team);
 
-        // OneLogin reads the SAMLResponse from the $_POST superglobal; bridge the
-        // Laravel request into it so this works under the test client too.
-        $_POST['SAMLResponse'] = $request->input('SAMLResponse');
+        // Consume the browser's pending request once, including its tenant.
+        // A null request ID makes the toolkit accept unsolicited assertions.
+        $requestId = $request->session()->pull('saml_request_id');
+        $requestTeam = $request->session()->pull('saml_team');
+        abort_unless(
+            is_string($requestId) && $requestId !== ''
+            && (is_int($requestTeam) || is_string($requestTeam))
+            && (string) $requestTeam === (string) $team->getKey(),
+            403,
+            'SAML verification failed.',
+        );
+
+        $response = $request->input('SAMLResponse');
+        abort_unless(SamlPayloadGuard::allows($response), 403, 'SAML verification failed.');
+
+        // OneLogin reads the response from the POST superglobal.
+        $_POST['SAMLResponse'] = $response;
         if ($request->filled('RelayState')) {
             $_POST['RelayState'] = $request->input('RelayState');
         }
-
-        // Bind the response to the AuthnRequest we minted (InResponseTo), then
-        // clear it so a captured response can't be replayed against the session.
-        $requestId = $request->session()->pull('saml_request_id');
-        $request->session()->forget('saml_team');
 
         $auth = new SamlAuth(SamlSettings::for($team, $connection));
         $auth->processResponse($requestId);
@@ -110,6 +120,12 @@ class SamlLoginController extends Controller
     public function sls(Team $team, Request $request): RedirectResponse
     {
         $connection = $this->enabledConnection($team);
+
+        foreach (['SAMLResponse', 'SAMLRequest'] as $parameter) {
+            if ($request->has($parameter)) {
+                abort_unless(SamlPayloadGuard::allows($request->query($parameter), deflated: true), 403, 'SAML logout verification failed.');
+            }
+        }
 
         // OneLogin reads the SAMLResponse from $_GET (HTTP-Redirect binding);
         // bridge the Laravel request into it for the test client.

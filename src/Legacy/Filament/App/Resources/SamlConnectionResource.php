@@ -21,6 +21,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Auth\Access\Response;
 
 /**
  * A team admin manages their team's SAML (SP<->IdP) connection (G2 SAML slice 1).
@@ -45,6 +46,14 @@ class SamlConnectionResource extends Resource
     public static function canCreate(): bool
     {
         return static::getEloquentQuery()->count() === 0;
+    }
+
+    #[\Override]
+    public static function getCreateAuthorizationResponse(): Response
+    {
+        return static::canCreate()
+            ? parent::getCreateAuthorizationResponse()
+            : Response::deny();
     }
 
     #[\Override]

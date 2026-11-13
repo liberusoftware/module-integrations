@@ -36,7 +36,7 @@ class SamlJitTest extends TestCase
 
     private function postAcs(Team $team, string $response, string $requestId): TestResponse
     {
-        return $this->withSession(['saml_request_id' => $requestId])
+        return $this->withSession(['saml_request_id' => $requestId, 'saml_team' => $team->id])
             ->call('POST', '/saml/'.$team->id.'/acs', ['SAMLResponse' => $response]);
     }
 

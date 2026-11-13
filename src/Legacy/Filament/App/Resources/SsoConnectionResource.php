@@ -23,6 +23,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Auth\Access\Response;
 
 /**
  * A team admin manages their team's SSO (OIDC) connection (G2 slice 1). Team is
@@ -49,6 +50,14 @@ class SsoConnectionResource extends Resource
     {
         // One connection per team.
         return static::getEloquentQuery()->count() === 0;
+    }
+
+    #[\Override]
+    public static function getCreateAuthorizationResponse(): Response
+    {
+        return static::canCreate()
+            ? parent::getCreateAuthorizationResponse()
+            : Response::deny();
     }
 
     #[\Override]
