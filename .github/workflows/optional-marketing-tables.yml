@@ -1,0 +1,21 @@
+name: Optional marketing tables
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: pdo_sqlite
+          coverage: none
+      - run: composer update --no-interaction --no-progress --no-scripts
+      - run: vendor/bin/pest tests/Unit/OptionalMarketingTablesTest.php
