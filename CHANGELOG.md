@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.0 - 2026-11-20
+
+- Allow injecting `MailchimpMarketing\ApiClient` into `MailChimpService` for host-independent unit testing.
+
 ## 1.8.3 - 2026-11-14
 
 - Read campaign identifiers from real Mailchimp SDK object responses while preserving array adapters and the original response type.
