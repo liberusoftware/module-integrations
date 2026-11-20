@@ -10,8 +10,14 @@ class MailChimpService
 {
     protected ApiClient $client;
 
-    public function __construct()
+    public function __construct(?ApiClient $client = null)
     {
+        if ($client !== null) {
+            $this->client = $client;
+
+            return;
+        }
+
         $this->client = new ApiClient();
         $this->client->setConfig([
             'apiKey' => config('services.mailchimp.api_key'),

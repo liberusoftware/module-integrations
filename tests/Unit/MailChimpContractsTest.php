@@ -17,6 +17,11 @@ require_once dirname(__DIR__, 2).'/src/Legacy/Services/MailChimpService.php';
 
 final class MailChimpContractsTest extends PackageTestCase
 {
+    protected function packageRoot(): string
+    {
+        return dirname(__DIR__, 2);
+    }
+
     private MailChimpService $service;
 
     private ApiClient $client;
@@ -29,8 +34,7 @@ final class MailChimpContractsTest extends PackageTestCase
         $this->client->lists = Mockery::mock(ListsApi::class);
         $this->client->campaigns = Mockery::mock(CampaignsApi::class);
         $this->client->reports = Mockery::mock(ReportsApi::class);
-        $this->service = new MailChimpService();
-        $this->service->setClient($this->client);
+        $this->service = new MailChimpService($this->client);
     }
 
     public function test_creates_a_campaign_using_the_sdk_object_response(): void
