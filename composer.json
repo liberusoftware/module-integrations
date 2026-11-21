@@ -19,7 +19,7 @@
       "name": "integrations"
     }
   },
-  "version": "1.9.0",
+  "version": "1.9.1",
   "autoload-dev": {
     "psr-4": {
       "Liberu\\Foundation\\Integrations\\Tests\\": "tests/"
@@ -27,8 +27,7 @@
   },
   "require-dev": {
     "liberusoftware/package-testbench": "^1.5",
-    "pestphp/pest": "^5.3.3",
-    "mailchimp/marketing": "^3.0"
+    "pestphp/pest": "^5.3.3"
   },
   "scripts": {
     "test": "pest"
