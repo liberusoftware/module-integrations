@@ -3,14 +3,15 @@
   "name": "integrations",
   "display_name": "Integrations",
   "description": "Provider credentials, adapter capabilities, OAuth boundaries, rotation, connection tests, sync, and reconciliation.",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "category": "foundation",
   "provider": "Liberu\\Foundation\\Integrations\\IntegrationsServiceProvider",
   "requires": {
     "php": "^8.5",
     "laravel": "^13.0",
     "packages": {
-      "liberusoftware/module-manager": "^1.0"
+      "liberusoftware/module-manager": "^1.0",
+      "liberusoftware/organizations-teams": "^1.0"
     }
   },
   "suggests": {
