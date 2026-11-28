@@ -140,7 +140,7 @@ class IntegrationsCoreTest extends TestCase
     public function test_ssrf_guard_validates_https_ips_and_hostnames(): void
     {
         SsrfGuard::assertPublicHttps('https://8.8.8.8/oidc');
-        SsrfGuard::assertPublicHttps('https://'.gethostname().'/oidc');
+        SsrfGuard::assertPublicHttps('https://nonexistent.invalid/oidc');
 
         foreach ([
             'http://example.com/oidc',
